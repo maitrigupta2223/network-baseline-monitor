@@ -3,7 +3,7 @@ services:
     name: network-baseline-monitor
     runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn wsgi:app --workers 1 --threads 2 --access-logfile -
+    startCommand: gunicorn wsgi:app --workers 1 --access-logfile -
     healthCheckPath: /api/health
     envVars:
       - key: HOST
