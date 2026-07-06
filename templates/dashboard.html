@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Network Baseline Monitor — Anomaly Detection</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">NBM</div>
+    <div>
+      <h1>Network Baseline Monitor</h1>
+      <div class="subtitle">Real-time traffic baselining &amp; anomaly detection</div>
+    </div>
+  </div>
+  <div class="status">
+    <span id="status-pill" class="pill pill-train">training</span>
+    <span class="muted">uptime <b id="uptime">0s</b></span>
+    <span class="muted">window <b>{{ "%.0f"|format(cfg.window_seconds) }}s</b></span>
+    <span class="muted">z-threshold <b>{{ cfg.z_threshold }}</b></span>
+  </div>
+</header>
+
+<main class="grid">
+
+  <section class="card kpi">
+    <div class="kpi-tile">
+      <div class="label">Packets / sec</div>
+      <div class="value" id="kpi-pps">0</div>
+      <div class="sub" id="kpi-pps-sub">baseline μ=— σ=—</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="label">Bytes / sec</div>
+      <div class="value" id="kpi-bps">0 B</div>
+      <div class="sub" id="kpi-bps-sub">baseline μ=— σ=—</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="label">Total flows</div>
+      <div class="value" id="kpi-flows">0</div>
+      <div class="sub">since startup</div>
+    </div>
+    <div class="kpi-tile">
+      <div class="label">Unique IPs (last window)</div>
+      <div class="value" id="kpi-ips">0 / 0</div>
+      <div class="sub">src / dst</div>
+    </div>
+    <div class="kpi-tile alerts-tile">
+      <div class="label">Alerts</div>
+      <div class="value">
+        <span class="badge badge-crit" id="kpi-crit">0</span>
+        <span class="badge badge-warn" id="kpi-warn">0</span>
+        <span class="badge badge-info" id="kpi-info">0</span>
+      </div>
+      <div class="sub">critical / warning / info</div>
+    </div>
+  </section>
+
+  <section class="card chart-card span-2">
+    <div class="card-header">
+      <h2>Packets / sec — observed vs. baseline ±3σ</h2>
+      <span class="legend">
+        <i class="dot dot-line"></i>observed
+        <i class="dot dot-mean"></i>baseline mean
+        <i class="dot dot-band"></i>±3σ band
+        <i class="dot dot-anom"></i>anomalous window
+      </span>
+    </div>
+    <div class="chart-wrap chart-wrap-tall"><canvas id="chartPackets"></canvas></div>
+  </section>
+
+  <section class="card chart-card">
+    <div class="card-header"><h2>Bytes / sec</h2></div>
+    <div class="chart-wrap"><canvas id="chartBytes"></canvas></div>
+  </section>
+
+  <section class="card chart-card">
+    <div class="card-header"><h2>Protocol mix</h2></div>
+    <div class="chart-wrap"><canvas id="chartProto"></canvas></div>
+  </section>
+
+  <section class="card chart-card">
+    <div class="card-header"><h2>Top destination ports (bytes)</h2></div>
+    <div class="chart-wrap"><canvas id="chartPorts"></canvas></div>
+  </section>
+
+  <section class="card">
+    <div class="card-header"><h2>Top source IPs (last window)</h2></div>
+    <table class="t" id="tbl-talkers">
+      <thead><tr><th>Source IP</th><th class="num">Bytes</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section class="card span-2">
+    <div class="card-header">
+      <h2>Live alerts</h2>
+      <span class="muted" id="alerts-count">0 alerts</span>
+    </div>
+    <div id="alerts-feed" class="alerts-feed">
+      <div class="empty">No alerts yet — system is learning the baseline.</div>
+    </div>
+  </section>
+
+  <section class="card span-3 baseline-card">
+    <div class="card-header"><h2>Learned baseline (per-second metrics)</h2></div>
+    <table class="t" id="tbl-baseline">
+      <thead><tr><th>Metric</th><th class="num">Mean</th><th class="num">Std dev</th><th class="num">Samples</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+</main>
+
+<footer>
+  <span>Network Baseline Monitor for Anomaly Detection</span>
+  <span class="muted">Maitri Gupta · MSc Cybersecurity · Amity Institute of Information Technology</span>
+</footer>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

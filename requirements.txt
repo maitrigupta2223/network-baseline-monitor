@@ -1,0 +1,4 @@
+Flask>=3.0.0
+gunicorn>=22.0.0
+# scapy is only needed for live-capture mode; install with: pip install scapy
+# scapy>=2.5.0
